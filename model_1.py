@@ -72,7 +72,7 @@ with open(os.path.join(os.path.dirname(__file__), 'save', 'res.pickle'), 'wb') a
     pickle.dump(model, f)
 
 # classifier
-k = 100
+k = 10
 x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
 model = KNeighborsClassifier(n_neighbors=k)
 model.fit(x_train, y_train)
