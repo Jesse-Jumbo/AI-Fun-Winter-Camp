@@ -15,7 +15,7 @@ class MLPlay:
         self.step = 0
         self.reward = 0
         self.action = 0
-        self.action_space = [["SERVE_TO_LEFT"], ["SERVE_TO_RIGHT"], ["MOVE_LEFT"], ["MOVE_RIGHT"], ["NONE"]]
+        self.action_space = ["SERVE_TO_LEFT", "SERVE_TO_RIGHT", "MOVE_LEFT", "MOVE_RIGHT", "NONE"]
         self.n_actions = len(self.action_space)
         self.n_features = 2
         self.RL = QLearningTable(actions=list(range(self.n_actions)))        
@@ -35,15 +35,10 @@ class MLPlay:
         # new
         if not self.ball_served:
             self.ball_served = True
-            command = random.choice(["SERVE_TO_LEFT" "SERVE_TO_RIGHT"])
+            command = random.choice(["SERVE_TO_LEFT", "SERVE_TO_RIGHT"])
             self.previous_ball = scene_info["ball"]
             print(command)
         # end new
-        self.ball_vel_x = scene_info["ball"][0] - self.previous_ball[0]
-        self.ball_vel_y = scene_info["ball"][1] - self.previous_ball[1]
-        self.ball_pos_x = scene_info["ball"][0]
-        self.ball_pos_y = scene_info["ball"][1]
-        self.platform_1P = scene_info["platform"][0]
 
         def check():
             self.observation = 0
@@ -57,12 +52,12 @@ class MLPlay:
             if scene_info["ball"][1] < 257:
             # x_trend > 0 球往左走 & 限制平在75~85間移動
                 if(x_trend > 0 and scene_info['platform'][0] <= 90) and scene_info['ball'][0] >= 70:
-                    self.observation = 1
+                    self.observation = 2
                 # new
                 elif (x_trend < 0 and scene_info['platform'][0] >= 70) and scene_info['ball'][0] <= 90:
-                    self.observation = 2
-                else:
                     self.observation = 3
+                else:
+                    self.observation = 4
                 # end new
         def step(self, state):
             # reward function
@@ -73,12 +68,12 @@ class MLPlay:
 
             '''
             # new
-            if self.observation == 1:
-                self.reward -= 1
             if self.observation == 2:
-                self.reward -= 1
+                self.reward += 1
             if self.observation == 3:
                 self.reward += 1
+            if self.observation == 4:
+                self.reward -= 1
             # end new
 
             return self.reward

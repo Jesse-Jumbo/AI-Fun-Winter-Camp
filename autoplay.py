@@ -2,6 +2,8 @@
 The template of the main script of the machine learning process
 """
 import os
+import random
+
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
@@ -35,7 +37,7 @@ class MLPlay:
             return "RESET"
         if not self.ball_served:
             self.ball_served = True
-            command = "SERVE_TO_RIGHT"
+            command = random.choice(["SERVE_TO_RIGHT", "SERVE_TO_LEFT"])
         else:
             ball_x = scene_info['ball'][0]
             ball_y = scene_info['ball'][1]
