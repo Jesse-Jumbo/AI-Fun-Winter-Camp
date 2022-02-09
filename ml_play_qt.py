@@ -9,6 +9,9 @@ class MLPlay:
         self.ball_pos = (95, 400)
         self.platform_pos = (75, 400)
         self.previous_ball = (0, 0)
+        # new
+        self.pred = 100
+        # end new
         self.step = 0
         self.reward = 0
         self.action = 0
@@ -29,27 +32,38 @@ class MLPlay:
         """
         if scene_info["status"] == "GAME_OVER" or scene_info["status"] == "GAME_PASS":
             return "RESET"
-        
-        # self.ball_vel_x = scene_info["ball"][0] - self.previous_ball[0]
-        # self.ball_vel_y = scene_info["ball"][1] - self.previous_ball[1]
-        # self.ball_pos_x = scene_info["ball"][0]
-        # self.ball_pos_y = scene_info["ball"][1]
-        # self.platform_1P = scene_info["platform"][0]
+        # new
+        if not self.ball_served:
+            self.ball_served = True
+            command = random.choice(["SERVE_TO_LEFT" "SERVE_TO_RIGHT"])
+            self.previous_ball = scene_info["ball"]
+            print(command)
+        # end new
+        self.ball_vel_x = scene_info["ball"][0] - self.previous_ball[0]
+        self.ball_vel_y = scene_info["ball"][1] - self.previous_ball[1]
+        self.ball_pos_x = scene_info["ball"][0]
+        self.ball_pos_y = scene_info["ball"][1]
+        self.platform_1P = scene_info["platform"][0]
 
         def check():
             self.observation = 0
-
-            '''
-            example:
-           # 球正在往上 & 球高於257時
+            # new
+            self.pred = 100
+            # end new
+            # example:
+            # 球正在往上 & 球高於257時
             x_trend = self.previous_ball[0]-scene_info['ball'][0]  # 球x軸方向
             y_trend = self.previous_ball[1]-scene_info['ball'][1]  # 球y軸方向
             if scene_info["ball"][1] < 257:
-          # x_trend > 0 球往左走 & 限制平在75~85間移動
-            if(x_trend > 0 and scene_info['platform'][0] <= 90) and scene_info['ball'][0] >= 70:
-                self.observation = 1
-            '''
-
+            # x_trend > 0 球往左走 & 限制平在75~85間移動
+                if(x_trend > 0 and scene_info['platform'][0] <= 90) and scene_info['ball'][0] >= 70:
+                    self.observation = 1
+                # new
+                elif (x_trend < 0 and scene_info['platform'][0] >= 70) and scene_info['ball'][0] <= 90:
+                    self.observation = 2
+                else:
+                    self.observation = 3
+                # end new
         def step(self, state):
             # reward function
             self.reward = 0
@@ -58,6 +72,14 @@ class MLPlay:
             you can design your reward function here !
 
             '''
+            # new
+            if self.observation == 1:
+                self.reward -= 1
+            if self.observation == 2:
+                self.reward -= 1
+            if self.observation == 3:
+                self.reward += 1
+            # end new
 
             return self.reward
 
